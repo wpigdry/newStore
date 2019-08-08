@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+
+<script>
+     var shops = [
+        {
+            name: '项目一',
+            num: 200,
+        },
+        {
+            name: '项目二',
+            num: 620,
+        },
+        {
+            name: '项目三',
+            num: 50,
+        },
+        {
+            name: '项目四',
+            num: 400,
+        },
+        {
+            name: '项目五',
+            num: 280,
+        },
+        {
+            name: '项目六',
+            num: 380,
+        },
+    ];
+
+
+    var canvas = document.createElement('canvas');
+    const w_h = 500;
+    canvas.width = w_h;
+    canvas.height = w_h;
+    canvas.style.border = '1px solid #ccc';
+    document.body.appendChild(canvas);
+
+    var ctx = canvas.getContext('2d');
+
+
+    var newArr = JSON.parse(JSON.stringify(shops));  // 拷贝数组
+    let maxNum = newArr.sort(function (a,b) {
+        return  b.num - a.num ;
+    })[0].num;
+
+
+    canvas.addEventListener('mousemove', function(e) {
+
+        ctx.clearRect(0, 0, 500, 500);
+        draw(e) ;
+    })
+
+    draw() ;
+
+    function draw(e) {
+
+        // 第一步  画轴
+        ctx.beginPath();
+        ctx.moveTo(50, 50);
+        ctx.lineTo(50, 450);
+        ctx.lineTo(450, 450);
+        ctx.stroke();
+
+        // 第二步 画刻度
+    
+
+        ctx.textBaseline = 'middle'; // 垂直居中
+        ctx.textAlign = 'end'; // 结尾对齐    center文字居中    start 使内容开头对其
+
+
+        for( var i = 0; i < 450; i += 50) {
+            ctx.beginPath();
+            ctx.moveTo(46, i);
+            ctx.lineTo(450, i);
+            ctx.fillText( Math.floor((450 - i) / 400 * maxNum), 40, i);
+            // 算出每组数在450当中的比例，然后450改成600，*600就是在600当中的比例
+            ctx.stroke();
+            strokeStyle = 'blue';
+        }
+
+        // 第三步
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        var mangin = 400 / (shops.length + 1); //要有间隔
+
+    
+        // console.log(mangin)
+        for( var i = 0; i < shops.length; i++) {
+            ctx.save(); // 保存状态
+            ctx.beginPath();
+            ctx.rect( mangin * (i + 1) + 50 - 10, 450, 20, -shops[i].num / maxNum * 400);
+            
+            if(e && ctx.isPointInPath(e.offsetX, e.offsetY)) {
+                ctx.fillStyle = 'orange';
+                ctx.fillText(shops[i].num, mangin * (i + 1) + 50, 450-(shops[i].num / maxNum * 400) - 10);
+                ctx.textAlign = 'center';
+
+            }
+
+                ctx.fill();
+                ctx.fillText(shops[i].name, 50 + mangin * (i + 1), 470); // 填充名字
+                ctx.restore();  // 划过之后返回
+                ctx.closePath();
+        } 
+        
+    }
+   
+    // 用rect写矩形，就可以用isPointInPath方法检测是否在范围
+    // 检测是否在路径内，如果在，则划过fillstyle高亮
+    // 每一次移动都需要清除画布，然后重绘
+
+    // 每一个功能写成一段，然后不容易出错， 都写到一个函数里面， 然后调用就行了
+
+
+</script>
+</html>
